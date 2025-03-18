@@ -54,23 +54,16 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       const jobsData = await fetchJobs();
-
-      if (!Array.isArray(jobsData)) {
-        throw new Error("Invalid jobs data received from API");
-      }
-
-      console.log("Fetched Jobs Data:", jobsData); // Debugging line
-
+      // Add unique IDs to each job
       const jobsWithIds = jobsData.map((job: JobResponse) => ({
         ...job,
         id: uuidv4(),
       }));
-
       setJobs(jobsWithIds);
       setFilteredJobs(jobsWithIds);
     } catch (err) {
       setError("Failed to fetch jobs. Please try again later.");
-      console.error("Fetch Jobs Error:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
