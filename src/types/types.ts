@@ -9,15 +9,15 @@ export interface Job {
   postedDate: string;
 }
 
-export interface JobResponse {
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  description: string;
-  requirements: string[];
-  postedDate: string; // Added missing postedDate field
-}
+// export interface JobResponse {
+//   title: string;
+//   company: string;
+//   location: string;
+//   salary: string;
+//   description: string;
+//   requirements: string[];
+//   postedDate: string; // Added missing postedDate field
+// }
 
 export interface ApplicationForm {
   name: string;
