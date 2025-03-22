@@ -1,19 +1,19 @@
-import { JobResponse } from '../types/types';
+import { JobResponse } from "../types/types";
 
-const API_URL = 'https://empllo.com/api/v1';
+const API_URL = "https://empllo.com/api/v1/jobs";
 
 export const fetchJobs = async (): Promise<JobResponse[]> => {
   try {
     const response = await fetch(`${API_URL}`);
-    
+
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
     }
-    
-    const data = await response.json();
+
+    const data: JobResponse[] = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching jobs:', error);
+    console.error("Error fetching jobs:", error);
     throw error;
   }
 };

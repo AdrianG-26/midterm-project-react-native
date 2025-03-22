@@ -16,7 +16,7 @@ export interface JobResponse {
   salary: string;
   description: string;
   requirements: string[];
-  postedDate: string;
+  postedDate: string; // Added missing postedDate field
 }
 
 export interface ApplicationForm {
