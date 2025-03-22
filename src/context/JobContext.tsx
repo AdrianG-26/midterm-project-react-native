@@ -1,126 +1,81 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { Job, JobResponse, ApplicationForm } from '../types/types';
-import { fetchJobs } from '../api/jobsApi';
+import axios from "axios";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import uuid from "react-native-uuid";
+import { Job } from "../types/types";
 
-interface JobContextProps {
+interface JobContextType {
   jobs: Job[];
   savedJobs: Job[];
-  applications: ApplicationForm[];
-  loading: boolean;
-  error: string | null;
-  searchJobs: (query: string) => void;
+  fetchJobs: () => void;
   saveJob: (job: Job) => void;
   removeJob: (id: string) => void;
-  applyForJob: (application: ApplicationForm) => void;
-  isJobSaved: (id: string) => boolean;
-  hasApplied: (id: string) => boolean;
-  refreshJobs: () => void;
-  filteredJobs: Job[];
 }
 
-const JobContext = createContext<JobContextProps | undefined>(undefined);
+// Create context
+const JobContext = createContext<JobContextType | undefined>(undefined);
 
-export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const JobProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [savedJobs, setSavedJobs] = useState<Job[]>([]);
-  const [applications, setApplications] = useState<ApplicationForm[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
 
-  // Fetch jobs on initial load
   useEffect(() => {
-    refreshJobs();
+    fetchJobs();
   }, []);
 
-  // Update filtered jobs when jobs or search query changes
-  useEffect(() => {
-    const filtered = jobs.filter(
-      job => 
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredJobs(filtered);
-  }, [jobs, searchQuery]);
-
-  const refreshJobs = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchJobs = async () => {
     try {
-      const jobsData = await fetchJobs();
-      // Add unique IDs to each job
-      const jobsWithIds = jobsData.map((job: JobResponse) => ({
-        ...job,
-        id: uuidv4(),
+      const response = await axios.get("https://empllo.com/api/v1");
+
+      if (!response.data || !Array.isArray(response.data)) {
+        throw new Error("Invalid API response format");
+      }
+
+      const jobsWithId: Job[] = response.data.map((job: any) => ({
+        id: String(uuid.v4()),
+        title: job.title || "Unknown Title",
+        company: job.company || "Unknown Company",
+        salary: job.salary ? String(job.salary) : "Not Provided",
+        location: job.location || "Unknown Location",
+        description: job.description || "No description available",
       }));
-      setJobs(jobsWithIds);
-      setFilteredJobs(jobsWithIds);
-    } catch (err) {
-      setError('Failed to fetch jobs. Please try again later.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+
+      setJobs(jobsWithId);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
     }
   };
 
-  const searchJobs = (query: string) => {
-    setSearchQuery(query);
-  };
-
   const saveJob = (job: Job) => {
-    // Check if job is already saved to prevent duplicates
-    if (!isJobSaved(job.id)) {
+    if (!savedJobs.some((saved) => saved.id === job.id)) {
       setSavedJobs([...savedJobs, job]);
     }
   };
 
   const removeJob = (id: string) => {
-    setSavedJobs(savedJobs.filter(job => job.id !== id));
-  };
-
-  const applyForJob = (application: ApplicationForm) => {
-    setApplications([...applications, application]);
-  };
-
-  const isJobSaved = (id: string) => {
-    return savedJobs.some(job => job.id === id);
-  };
-
-  const hasApplied = (id: string) => {
-    return applications.some(app => app.jobId === id);
+    setSavedJobs(savedJobs.filter((job) => job.id !== id));
   };
 
   return (
     <JobContext.Provider
-      value={{
-        jobs,
-        savedJobs,
-        applications,
-        loading,
-        error,
-        searchJobs,
-        saveJob,
-        removeJob,
-        applyForJob,
-        isJobSaved,
-        hasApplied,
-        refreshJobs,
-        filteredJobs,
-      }}
+      value={{ jobs, savedJobs, fetchJobs, saveJob, removeJob }}
     >
       {children}
     </JobContext.Provider>
   );
 };
 
-export const useJobs = () => {
+export const useJobs = (): JobContextType => {
   const context = useContext(JobContext);
-  if (context === undefined) {
-    throw new Error('useJobs must be used within a JobProvider');
+  if (!context) {
+    throw new Error("useJobs must be used within a JobProvider");
   }
   return context;
 };
