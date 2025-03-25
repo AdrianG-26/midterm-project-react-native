@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import uuid  from "react-native-uuid";
+import uuid from "react-native-uuid";
 import { fetchJobs } from "../api/jobsApi";
 import { ApplicationForm, Job, JobResponse } from "../types/types";
 
@@ -39,13 +39,18 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Update filtered jobs when jobs or search query changes
   useEffect(() => {
+    if (!jobs?.length) return; // Avoid unnecessary filtering if no jobs exist
+
+    const search = (searchQuery ?? "").trim().toLowerCase();
+
     const filtered = jobs.filter(
       (job) =>
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchQuery.toLowerCase())
+        (job.title ?? "").toLowerCase().includes(search) ||
+        (job.companyName ?? "").toLowerCase().includes(search) ||
+        (job.locations["1"] ?? "").toLowerCase().includes(search) 
+        // || (job.description ?? "").toLowerCase().includes(search)
     );
+
     setFilteredJobs(filtered);
   }, [jobs, searchQuery]);
 

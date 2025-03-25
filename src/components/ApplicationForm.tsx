@@ -104,7 +104,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
             {job.title}
           </Text>
           <Text style={[styles.jobCompany, { color: colors.primary }]}>
-            {job.company}
+            {job.companyName}
           </Text>
         </View>
 
@@ -244,7 +244,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
                 Application Submitted!
               </Text>
               <Text style={[styles.modalText, { color: colors.secondary }]}>
-                Your application for {job.title} at {job.company} has been
+                Your application for {job.title} at {job.companyName} has been
                 successfully submitted.
               </Text>
               <TouchableOpacity

@@ -1,9 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useTheme } from '../context/ThemeContext';
+import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 interface HeaderProps {
   title: string;
@@ -11,55 +9,39 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title, showBackButton = false }) => {
-  const navigation = useNavigation<StackNavigationProp<any>>();
   const { colors } = useTheme();
+  const navigation = useNavigation();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-      <View style={styles.leftContainer}>
-        {showBackButton && (
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()} 
-            style={styles.backButton}
-          >
-            <Icon name="arrow-back" size={24} color={colors.primary} />
-          </TouchableOpacity>
-        )}
-        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
-      </View>
-      
-      <TouchableOpacity 
-        onPress={() => navigation.navigate('SavedJobs')}
-        style={styles.savedButton}
-      >
-        <Icon name="bookmark" size={24} color={colors.primary} />
-      </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
+      {showBackButton && (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={[styles.backButton, { color: colors.primary }]}>
+            Back
+          </Text>
+        </TouchableOpacity>
+      )}
+      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      {/* Remove the Saved Jobs icon */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
     borderBottomWidth: 1,
-  },
-  leftContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderBottomColor: "#ccc",
   },
   backButton: {
-    marginRight: 16,
+    fontSize: 16,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  savedButton: {
-    padding: 4,
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
 

@@ -11,7 +11,10 @@ export const fetchJobs = async (): Promise<JobResponse[]> => {
     }
 
     const data = await response.json();
-    return data.jobs;
+    return data.jobs.map((job: JobResponse) => ({
+      ...job,
+      picture: job.companyLogo,
+    }));
   } catch (error) {
     console.error("Error fetching jobs:", error);
     throw error;

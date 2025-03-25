@@ -1,23 +1,28 @@
 export interface Job {
   id: string;
   title: string;
-  company: string;
-  location: string;
-  salary: string;
-  description: string;
-  requirements: string[];
-  postedDate: string;
+  companyName: string;
+  companyLogo: string; 
+  jobType: string;
+  workModel: string;
+  seniorityLevel: string;
+  minSalary: string;
+  maxSalary: string;
+  locations: string;
 }
 
-// export interface JobResponse {
-//   title: string;
-//   company: string;
-//   location: string;
-//   salary: string;
-//   description: string;
-//   requirements: string[];
-//   postedDate: string; // Added missing postedDate field
-// }
+export interface JobResponse {
+  id: string;
+  title: string;
+  companyName: string;
+  companyLogo: string; 
+  jobType: string;
+  workModel: string;
+  seniorityLevel: string;
+  minSalary: string;
+  maxSalary: string;
+  locations: string;
+}
 
 export interface ApplicationForm {
   name: string;
