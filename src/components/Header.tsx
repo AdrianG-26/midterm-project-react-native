@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({
   const { colors, theme } = useTheme();
   const navigation = useNavigation();
 
-  // Define variant-specific properties
+
   const getVariantProperties = () => {
     switch (variant) {
       case "jobFinder":

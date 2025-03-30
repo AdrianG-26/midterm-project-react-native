@@ -24,7 +24,7 @@ const JobFinderStackNavigator: React.FC = () => {
         headerShown: false,
         gestureEnabled: true,
         cardStyle: { backgroundColor: "transparent" },
-        ...TransitionPresets.SlideFromRightIOS, // Smooth horizontal slide transition
+        ...TransitionPresets.SlideFromRightIOS, 
       }}
     >
       <Stack.Screen name="JobFinderMain" component={JobFinderScreen} />
@@ -33,7 +33,7 @@ const JobFinderStackNavigator: React.FC = () => {
         component={ApplicationScreen}
         options={{
           gestureEnabled: true,
-          ...TransitionPresets.SlideFromRightIOS, // Horizontal slide transition for application screen
+          ...TransitionPresets.SlideFromRightIOS, 
         }}
       />
     </Stack.Navigator>

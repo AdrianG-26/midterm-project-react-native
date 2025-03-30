@@ -29,7 +29,7 @@ interface JobCardProps {
   onCancelApplication?: () => void;
 }
 
-// Define a composite navigation prop that works with both the tab navigator and stack navigator
+
 type JobCardNavigationProp = CompositeNavigationProp<
   StackNavigationProp<StackParamList>,
   StackNavigationProp<JobFinderStackParamList>
@@ -47,17 +47,16 @@ const JobCard: React.FC<JobCardProps> = ({
   const { saveJob, removeJob, isJobSaved, hasApplied } = useJobs();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // Get button text color based on theme
+ 
   const buttonTextColor = theme === "dark" ? "#2A2A2A" : "#F6F5F5";
-  // Define the not disclosed text style
-  const notDisclosedColor = "#E53935"; // Red color for "Not Disclosed"
+
+  const notDisclosedColor = "#E53935"; 
 
   const handleApply = () => {
-    // If showRemoveButton is true, we're likely on the SavedJobs screen
+   
     const fromSavedJobs = showRemoveButton;
 
-    // Navigate directly to the Application modal from either screen
-    // Modal presentation will handle the proper UI transition
+
     navigation.navigate("JobFinder", {
       screen: "Application",
       params: { job, fromSavedJobs },
@@ -69,7 +68,7 @@ const JobCard: React.FC<JobCardProps> = ({
   };
 
   const handleRemove = () => {
-    // Show confirmation modal instead of removing immediately
+  
     setShowConfirmModal(true);
   };
 
@@ -91,7 +90,7 @@ const JobCard: React.FC<JobCardProps> = ({
   const saved = isJobSaved(job.id);
   const applied = hasApplied(job.id);
 
-  // Helper function to display "Not Disclosed" for null/undefined values
+  
   const displayValue = (
     value: any,
     renderer?: (val: any) => React.ReactNode
@@ -373,7 +372,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontWeight: "500",
   },
-  // Modal styles
+
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -423,7 +422,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   confirmButton: {
-    // background color set with color.error in component
+
   },
   modalButtonText: {
     fontSize: 16,

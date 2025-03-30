@@ -33,14 +33,14 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
 
-  // Fetch jobs on initial load
+ 
   useEffect(() => {
     refreshJobs();
   }, []);
 
-  // Update filtered jobs when jobs or search query changes
+
   useEffect(() => {
-    if (!jobs?.length) return; // Avoid unnecessary filtering if no jobs exist
+    if (!jobs?.length) return; 
 
     const search = (searchQuery ?? "").trim().toLowerCase();
 
@@ -49,7 +49,7 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
         (job.title ?? "").toLowerCase().includes(search) ||
         (job.companyName ?? "").toLowerCase().includes(search) ||
         (job.locations["1"] ?? "").toLowerCase().includes(search)
-      // || (job.description ?? "").toLowerCase().includes(search)
+     
     );
 
     setFilteredJobs(filtered);
@@ -60,7 +60,7 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       const jobsData = await fetchJobs();
-      // Add unique IDs to each job
+ 
       const jobsWithIds = jobsData.map((job: JobResponse) => ({
         ...job,
         id: uuid.v4() as string,
@@ -80,7 +80,7 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const saveJob = (job: Job) => {
-    // Check if job is already saved to prevent duplicates
+ 
     if (!isJobSaved(job.id)) {
       setSavedJobs([...savedJobs, job]);
     }
@@ -95,7 +95,7 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const cancelApplication = (jobId: string) => {
-    // Remove application with the matching jobId
+  
     setApplications(applications.filter((app) => app.jobId !== jobId));
   };
 

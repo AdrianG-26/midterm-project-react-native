@@ -24,12 +24,12 @@ const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // Initialize theme based on system preference
+
   const [theme, setTheme] = useState<ThemeType>(
     Appearance.getColorScheme() === "dark" ? "dark" : "light"
   );
 
-  // Update theme when system preference changes
+
   useEffect(() => {
     const subscription = Appearance.addChangeListener(({ colorScheme }) => {
       setTheme(colorScheme === "dark" ? "dark" : "light");

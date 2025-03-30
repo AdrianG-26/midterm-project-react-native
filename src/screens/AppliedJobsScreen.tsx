@@ -101,7 +101,7 @@ const AppliedJobsScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  // Filter jobs that have been applied for
+
   const appliedJobs = jobs.filter((job) =>
     applications.some((app) => app.jobId === job.id)
   );
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  // Modal styles
+ 
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   confirmButton: {
-    // background color set with colors.error in component
+  
   },
   modalButtonText: {
     fontSize: 16,

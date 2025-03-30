@@ -49,12 +49,11 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateForm = (field: keyof ApplicationFormType, value: string) => {
-    // Special handling for contact number - ensure it starts with "09" and only contains digits
+
     if (field === "contactNumber") {
-      // Remove any non-digit characters
+  
       const digitsOnly = value.replace(/\D/g, "");
 
-      // If the field is empty and the user is typing, automatically add "09"
       let formattedValue = digitsOnly;
       if (
         form.contactNumber === "" &&
@@ -64,7 +63,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         formattedValue = "09" + digitsOnly;
       }
 
-      // If the user deleted the "09" prefix, add it back
+   
       if (
         form.contactNumber.startsWith("09") &&
         digitsOnly.length >= 1 &&
@@ -74,14 +73,14 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
           "09" + digitsOnly.substring(digitsOnly.startsWith("9") ? 1 : 0);
       }
 
-      // Limit to 11 digits total
+
       const limitedDigits = formattedValue.slice(0, 11);
       setForm({ ...form, [field]: limitedDigits });
     } else {
       setForm({ ...form, [field]: value });
     }
 
-    // Clear error when user starts typing
+  
     if (errors[field as keyof FormErrors]) {
       setErrors({ ...errors, [field]: undefined });
     }
@@ -100,22 +99,22 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
       return;
     }
 
-    // Submit the application
+
     applyForJob(form);
 
-    // Reset the form immediately
+
     resetForm();
 
-    // Show success modal
+
     setModalVisible(true);
   };
 
   const closeModal = () => {
     setModalVisible(false);
 
-    // Use setTimeout to ensure the modal is fully closed before navigation
+
     setTimeout(() => {
-      // Navigate back to the JobFinder main screen, resetting the navigation stack
+    
       navigation.reset({
         index: 0,
         routes: [{ name: "JobFinder" }],

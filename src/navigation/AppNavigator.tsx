@@ -11,7 +11,7 @@ import { useJobs } from "../context/JobContext";
 import { useTheme } from "../context/ThemeContext";
 import AppliedJobsScreen from "../screens/AppliedJobsScreen";
 import SavedJobsScreen from "../screens/SavedJobsScreen";
-import JobFinderStackNavigator from "./JobFinderStackNavigator"; // Import the stack navigator
+import JobFinderStackNavigator from "./JobFinderStackNavigator"; 
 
 export type StackParamList = {
   JobFinder:
@@ -30,7 +30,7 @@ const AppNavigator: React.FC = () => {
   const { theme, colors } = useTheme();
   const { savedJobs, applications } = useJobs();
 
-  // Custom navigation theme based on current app theme
+ 
   const navigationTheme = {
     ...(theme === "dark" ? DarkTheme : DefaultTheme),
     colors: {
@@ -98,7 +98,7 @@ const AppNavigator: React.FC = () => {
                 </View>
               );
             } else {
-              iconName = "help"; // Default icon name
+              iconName = "help"; 
               return <Icon name={iconName} size={size} color={color} />;
             }
           },
