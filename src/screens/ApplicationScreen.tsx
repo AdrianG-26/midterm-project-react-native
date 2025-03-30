@@ -27,7 +27,7 @@ const ApplicationScreen: React.FC<ApplicationScreenProps> = ({ route }) => {
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.background}
       />
-      <Header title="Apply for Job" showBackButton />
+      <Header title="Apply for Job" showBackButton variant="default" />
       <ApplicationForm job={job} fromSavedJobs={fromSavedJobs} />
     </SafeAreaView>
   );

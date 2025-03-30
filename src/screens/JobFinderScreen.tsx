@@ -30,7 +30,7 @@ const JobFinderScreen: React.FC = () => {
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.background}
       />
-      <Header title="Job Hunter" />
+      <Header title="Job Hunter" variant="jobFinder" />
       <SearchBar />
       <JobList jobs={filteredJobs} loading={loading} onRefresh={refreshJobs} />
       <ThemeToggle />

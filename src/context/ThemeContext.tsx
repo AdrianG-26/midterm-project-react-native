@@ -13,6 +13,9 @@ interface ThemeContextProps {
     card: string;
     border: string;
     error: string;
+    accent: string;
+    header: string;
+    bottomNav: string;
   };
 }
 
@@ -42,23 +45,29 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const lightColors = {
-    background: "#F8F9FA",
-    text: "#212529",
-    primary: "#007BFF",
+    background: "#F6F5F5",
+    text: "#2A2A2A",
+    primary: "#4C145F",
     secondary: "#6C757D",
     card: "#FFFFFF",
     border: "#DEE2E6",
     error: "#DC3545",
+    accent: "#F6F5F5",
+    header: "#F6F5F5",
+    bottomNav: "#FFFFFF",
   };
 
   const darkColors = {
-    background: "#121212",
-    text: "#F8F9FA",
-    primary: "#0D6EFD",
+    background: "#2A2A2A",
+    text: "#F6F5F5",
+    primary: "#E9F443",
     secondary: "#ADB5BD",
-    card: "#1E1E1E",
+    card: "#1a1a1a",
     border: "#343A40",
     error: "#E74C3C",
+    accent: "#E9F443",
+    header: "#2A2A2A",
+    bottomNav: "#1a1a1a",
   };
 
   const colors = theme === "light" ? lightColors : darkColors;

@@ -1,8 +1,11 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import JobFinderScreen from '../screens/JobFinderScreen';
-import ApplicationScreen from '../screens/ApplicationScreen';
-import { Job } from '../types/types';
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from "@react-navigation/stack";
+import React from "react";
+import ApplicationScreen from "../screens/ApplicationScreen";
+import JobFinderScreen from "../screens/JobFinderScreen";
+import { Job } from "../types/types";
 
 export type JobFinderStackParamList = {
   JobFinderMain: undefined;
@@ -16,9 +19,23 @@ const Stack = createStackNavigator<JobFinderStackParamList>();
 
 const JobFinderStackNavigator: React.FC = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: true,
+        cardStyle: { backgroundColor: "transparent" },
+        ...TransitionPresets.SlideFromRightIOS, // Smooth horizontal slide transition
+      }}
+    >
       <Stack.Screen name="JobFinderMain" component={JobFinderScreen} />
-      <Stack.Screen name="Application" component={ApplicationScreen} />
+      <Stack.Screen
+        name="Application"
+        component={ApplicationScreen}
+        options={{
+          gestureEnabled: true,
+          ...TransitionPresets.SlideFromRightIOS, // Horizontal slide transition for application screen
+        }}
+      />
     </Stack.Navigator>
   );
 };

@@ -1,10 +1,23 @@
-import { useNavigation } from "@react-navigation/native";
+import {
+  CommonActions,
+  CompositeNavigationProp,
+  useNavigation,
+} from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useJobs } from "../context/JobContext";
 import { useTheme } from "../context/ThemeContext";
+import { StackParamList } from "../navigation/AppNavigator";
 import { JobFinderStackParamList } from "../navigation/JobFinderStackNavigator";
 import { Job } from "../types/types";
 
@@ -14,18 +27,42 @@ interface JobCardProps {
   showRemoveButton?: boolean;
 }
 
+// Define a composite navigation prop that works with both the tab navigator and stack navigator
+type JobCardNavigationProp = CompositeNavigationProp<
+  StackNavigationProp<StackParamList>,
+  StackNavigationProp<JobFinderStackParamList>
+>;
+
 const JobCard: React.FC<JobCardProps> = ({
   job,
   showSaveButton = true,
   showRemoveButton = false,
 }) => {
-  const navigation =
-    useNavigation<StackNavigationProp<JobFinderStackParamList>>();
-  const { colors } = useTheme();
+  const navigation = useNavigation<JobCardNavigationProp>();
+  const { colors, theme } = useTheme();
   const { saveJob, removeJob, isJobSaved, hasApplied } = useJobs();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // Get button text color based on theme
+  const buttonTextColor = theme === "dark" ? "#2A2A2A" : "#F6F5F5";
 
   const handleApply = () => {
-    navigation.navigate("Application", { job });
+    // If showRemoveButton is true, we're likely on the SavedJobs screen
+    const fromSavedJobs = showRemoveButton;
+
+    if (fromSavedJobs) {
+      // When coming from SavedJobs tab, navigate using nested navigation
+      navigation.navigate("JobFinder", {
+        screen: "Application",
+        params: { job, fromSavedJobs },
+      });
+    } else {
+      // When already in JobFinder tab, simply navigate to Application
+      navigation.navigate("Application", {
+        job,
+        fromSavedJobs,
+      });
+    }
   };
 
   const handleSave = () => {
@@ -33,100 +70,202 @@ const JobCard: React.FC<JobCardProps> = ({
   };
 
   const handleRemove = () => {
+    // Show confirmation modal instead of removing immediately
+    setShowConfirmModal(true);
+  };
+
+  const confirmRemove = () => {
     removeJob(job.id);
+    setShowConfirmModal(false);
+  };
+
+  const cancelRemove = () => {
+    setShowConfirmModal(false);
   };
 
   const saved = isJobSaved(job.id);
   const applied = hasApplied(job.id);
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: colors.card, borderColor: colors.border },
-      ]}
-    >
-      <Image source={{ uri: job.companyLogo }} style={styles.logo} />
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>{job.title}</Text>
-        <Text style={[styles.company, { color: colors.primary }]}>
-          {job.companyName}
-        </Text>
-      </View>
+    <>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: colors.card, borderColor: colors.border },
+        ]}
+      >
+        <View style={styles.header}>
+          <Image source={{ uri: job.companyLogo }} style={styles.logo} />
+          <View style={styles.headerText}>
+            <Text style={[styles.title, { color: colors.text }]}>
+              {job.title}
+            </Text>
+            <Text style={[styles.company, { color: colors.primary }]}>
+              {job.companyName}
+            </Text>
+          </View>
+        </View>
 
-      <View style={styles.detailsRow}>
-        <View style={styles.detail}>
-          <Icon name="briefcase-outline" size={16} color={colors.secondary} />
-          <Text style={[styles.detailText, { color: colors.secondary }]}>
-            {job.jobType}
-          </Text>
-        </View>
-        <View style={styles.detail}>
-          <Icon name="home-outline" size={16} color={colors.secondary} />
-          <Text style={[styles.detailText, { color: colors.secondary }]}>
-            {job.workModel}
-          </Text>
-        </View>
-        <View style={styles.detail}>
-          <Icon name="bar-chart-outline" size={16} color={colors.secondary} />
-          <Text style={[styles.detailText, { color: colors.secondary }]}>
-            {job.seniorityLevel}
-          </Text>
-        </View>
-        <View style={styles.detail}>
-          <Icon name="cash-outline" size={16} color={colors.secondary} />
-          <Text style={[styles.detailText, { color: colors.secondary }]}>
-            {job.minSalary} - {job.maxSalary}
-          </Text>
-        </View>
-        <View style={styles.detail}>
-          <Icon name="location-outline" size={16} color={colors.secondary} />
-          <Text style={[styles.detailText, { color: colors.secondary }]}>
-            {job.locations}
-          </Text>
-        </View>
-      </View>
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailsRow}>
+            <View style={styles.detail}>
+              <Icon
+                name="briefcase-outline"
+                size={16}
+                color={colors.secondary}
+              />
+              <Text style={[styles.detailText, { color: colors.secondary }]}>
+                {job.jobType}
+              </Text>
+            </View>
+            <View style={styles.detail}>
+              <Icon name="home-outline" size={16} color={colors.secondary} />
+              <Text style={[styles.detailText, { color: colors.secondary }]}>
+                {job.workModel}
+              </Text>
+            </View>
+          </View>
 
-      <View style={styles.footer}>
-        {showSaveButton && (
+          <View style={styles.detailsRow}>
+            <View style={styles.detail}>
+              <Icon
+                name="bar-chart-outline"
+                size={16}
+                color={colors.secondary}
+              />
+              <Text style={[styles.detailText, { color: colors.secondary }]}>
+                {job.seniorityLevel}
+              </Text>
+            </View>
+            <View style={styles.detail}>
+              <Icon name="cash-outline" size={16} color={colors.secondary} />
+              <Text style={[styles.detailText, { color: colors.secondary }]}>
+                {job.minSalary} - {job.maxSalary}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.detailsRow}>
+            <View style={[styles.detail, styles.fullWidthDetail]}>
+              <Icon
+                name="location-outline"
+                size={16}
+                color={colors.secondary}
+              />
+              <Text style={[styles.detailText, { color: colors.secondary }]}>
+                {Array.isArray(job.locations)
+                  ? `${job.locations[0]}, ${job.locations[1]}`
+                  : job.locations}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          {showSaveButton && (
+            <TouchableOpacity
+              style={[
+                styles.button,
+                saved
+                  ? { backgroundColor: colors.secondary }
+                  : { backgroundColor: colors.primary },
+              ]}
+              onPress={handleSave}
+              disabled={saved}
+            >
+              <Text style={[styles.buttonText, { color: buttonTextColor }]}>
+                {saved ? "Saved" : "Save Job"}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {showRemoveButton && (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: colors.error }]}
+              onPress={handleRemove}
+            >
+              <Text style={[styles.buttonText, { color: buttonTextColor }]}>
+                Remove
+              </Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={[
               styles.button,
-              saved
+              applied
                 ? { backgroundColor: colors.secondary }
                 : { backgroundColor: colors.primary },
             ]}
-            onPress={handleSave}
-            disabled={saved}
+            onPress={handleApply}
           >
-            <Text style={styles.buttonText}>
-              {saved ? "Saved" : "Save Job"}
+            <Text style={[styles.buttonText, { color: buttonTextColor }]}>
+              {applied ? "Applied" : "Apply"}
             </Text>
           </TouchableOpacity>
-        )}
-
-        {showRemoveButton && (
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.error }]}
-            onPress={handleRemove}
-          >
-            <Text style={styles.buttonText}>Remove</Text>
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            applied
-              ? { backgroundColor: colors.secondary }
-              : { backgroundColor: colors.primary },
-          ]}
-          onPress={handleApply}
-        >
-          <Text style={styles.buttonText}>{applied ? "Applied" : "Apply"}</Text>
-        </TouchableOpacity>
+        </View>
       </View>
-    </View>
+
+      {/* Confirmation Modal */}
+      <Modal
+        visible={showConfirmModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={cancelRemove}
+      >
+        <TouchableWithoutFeedback onPress={cancelRemove}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View
+                style={[styles.modalContent, { backgroundColor: colors.card }]}
+              >
+                <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  Remove Job
+                </Text>
+                <Text
+                  style={[styles.modalMessage, { color: colors.secondary }]}
+                >
+                  Are you sure you want to remove this job from your saved list?
+                </Text>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalButton,
+                      styles.cancelButton,
+                      { borderColor: colors.border },
+                    ]}
+                    onPress={cancelRemove}
+                  >
+                    <Text
+                      style={[styles.modalButtonText, { color: colors.text }]}
+                    >
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalButton,
+                      styles.confirmButton,
+                      { backgroundColor: colors.error },
+                    ]}
+                    onPress={confirmRemove}
+                  >
+                    <Text
+                      style={[
+                        styles.modalButtonText,
+                        { color: buttonTextColor },
+                      ]}
+                    >
+                      Remove
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </>
   );
 };
 
@@ -166,16 +305,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
+  detailsContainer: {
+    marginBottom: 12,
+  },
   detailsRow: {
     flexDirection: "row",
-    marginBottom: 12,
-    flexWrap: "wrap",
+    marginBottom: 8,
   },
   detail: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 16,
-    marginBottom: 4,
+    width: "50%",
+  },
+  fullWidthDetail: {
+    width: "100%",
   },
   detailText: {
     marginLeft: 4,
@@ -194,8 +337,63 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "white",
     fontWeight: "500",
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContent: {
+    width: "90%",
+    borderRadius: 12,
+    padding: 24,
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 24,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    flex: 1,
+    marginHorizontal: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cancelButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+  },
+  confirmButton: {
+    // background color set with color.error in component
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 

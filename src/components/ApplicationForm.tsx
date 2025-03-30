@@ -98,6 +98,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
           { backgroundColor: colors.background },
         ]}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.jobInfoContainer}>
           <Text style={[styles.jobTitle, { color: colors.text }]}>

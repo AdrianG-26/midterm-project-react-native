@@ -23,7 +23,7 @@ const AppliedJobsScreen: React.FC = () => {
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.background}
       />
-      <Header title="Applied Jobs" showBackButton />
+      <Header title="Applied Jobs" variant="appliedJobs" />
       <JobList
         jobs={appliedJobs}
         loading={false}
