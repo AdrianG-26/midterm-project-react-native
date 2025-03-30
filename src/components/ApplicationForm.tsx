@@ -47,8 +47,14 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateForm = (field: keyof ApplicationFormType, value: string) => {
-    setForm({ ...form, [field]: value });
-    // Clear error when user starts typing
+    if (field === "contactNumber") {
+      const digitsOnly = value.replace(/\D/g, "");
+      const limitedDigits = digitsOnly.slice(0, 11);
+      setForm({ ...form, [field]: limitedDigits });
+    } else {
+      setForm({ ...form, [field]: value });
+    }
+
     if (errors[field as keyof FormErrors]) {
       setErrors({ ...errors, [field]: undefined });
     }
@@ -181,11 +187,12 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
                     : colors.border,
                 },
               ]}
-              placeholder="Enter your contact number"
+              placeholder="Enter your 11-digit phone number"
               placeholderTextColor={colors.secondary}
               value={form.contactNumber}
               onChangeText={(text) => updateForm("contactNumber", text)}
               keyboardType="phone-pad"
+              maxLength={11}
             />
             {errors.contactNumber && (
               <Text style={[styles.errorText, { color: colors.error }]}>

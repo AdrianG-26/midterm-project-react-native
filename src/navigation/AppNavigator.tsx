@@ -28,7 +28,7 @@ const Tab = createBottomTabNavigator<StackParamList>();
 
 const AppNavigator: React.FC = () => {
   const { theme, colors } = useTheme();
-  const { savedJobs } = useJobs();
+  const { savedJobs, applications } = useJobs();
 
   // Custom navigation theme based on current app theme
   const navigationTheme = {
@@ -77,7 +77,26 @@ const AppNavigator: React.FC = () => {
               );
             } else if (route.name === "AppliedJobs") {
               iconName = "checkmark-done";
-              return <Icon name={iconName} size={size} color={color} />;
+              return (
+                <View style={styles.iconContainer}>
+                  <Icon name={iconName} size={size} color={color} />
+                  {applications.length > 0 && (
+                    <View
+                      style={[
+                        styles.badge,
+                        {
+                          backgroundColor:
+                            theme === "dark" ? "#4CAF50" : "#2E7D32",
+                        },
+                      ]}
+                    >
+                      <Text style={styles.badgeText}>
+                        {applications.length > 99 ? "99+" : applications.length}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              );
             } else {
               iconName = "help"; // Default icon name
               return <Icon name={iconName} size={size} color={color} />;

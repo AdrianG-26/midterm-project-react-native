@@ -17,6 +17,8 @@ interface JobListProps {
   onRefresh?: () => void;
   showSaveButton?: boolean;
   showRemoveButton?: boolean;
+  showCancelApplicationButton?: boolean;
+  onCancelApplication?: (job: Job) => void;
 }
 
 const JobList: React.FC<JobListProps> = ({
@@ -25,6 +27,8 @@ const JobList: React.FC<JobListProps> = ({
   onRefresh,
   showSaveButton = true,
   showRemoveButton = false,
+  showCancelApplicationButton = false,
+  onCancelApplication,
 }) => {
   const { colors } = useTheme();
 
@@ -61,6 +65,12 @@ const JobList: React.FC<JobListProps> = ({
           job={item}
           showSaveButton={showSaveButton}
           showRemoveButton={showRemoveButton}
+          showCancelApplicationButton={showCancelApplicationButton}
+          onCancelApplication={
+            showCancelApplicationButton && onCancelApplication
+              ? () => onCancelApplication(item)
+              : undefined
+          }
         />
       )}
       showsVerticalScrollIndicator={false}

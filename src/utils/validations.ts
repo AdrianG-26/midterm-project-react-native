@@ -19,11 +19,11 @@ export const validateForm = (form: ApplicationForm): FormErrors => {
   }
 
   // Contact number validation
-  const phoneRegex = /^\+?[0-9]{10,15}$/;
+  const phoneRegex = /^[0-9]{11}$/;
   if (!form.contactNumber.trim()) {
     errors.contactNumber = "Contact number is required";
   } else if (!phoneRegex.test(form.contactNumber)) {
-    errors.contactNumber = "Please enter a valid phone number (10-15 digits)";
+    errors.contactNumber = "Please enter a valid 11-digit phone number";
   }
 
   // Why hire you validation

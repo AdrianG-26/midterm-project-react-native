@@ -25,6 +25,8 @@ interface JobCardProps {
   job: Job;
   showSaveButton?: boolean;
   showRemoveButton?: boolean;
+  showCancelApplicationButton?: boolean;
+  onCancelApplication?: () => void;
 }
 
 // Define a composite navigation prop that works with both the tab navigator and stack navigator
@@ -37,6 +39,8 @@ const JobCard: React.FC<JobCardProps> = ({
   job,
   showSaveButton = true,
   showRemoveButton = false,
+  showCancelApplicationButton = false,
+  onCancelApplication,
 }) => {
   const navigation = useNavigation<JobCardNavigationProp>();
   const { colors, theme } = useTheme();
@@ -50,19 +54,12 @@ const JobCard: React.FC<JobCardProps> = ({
     // If showRemoveButton is true, we're likely on the SavedJobs screen
     const fromSavedJobs = showRemoveButton;
 
-    if (fromSavedJobs) {
-      // When coming from SavedJobs tab, navigate using nested navigation
-      navigation.navigate("JobFinder", {
-        screen: "Application",
-        params: { job, fromSavedJobs },
-      });
-    } else {
-      // When already in JobFinder tab, simply navigate to Application
-      navigation.navigate("Application", {
-        job,
-        fromSavedJobs,
-      });
-    }
+    // Navigate directly to the Application modal from either screen
+    // Modal presentation will handle the proper UI transition
+    navigation.navigate("JobFinder", {
+      screen: "Application",
+      params: { job, fromSavedJobs },
+    });
   };
 
   const handleSave = () => {
@@ -81,6 +78,12 @@ const JobCard: React.FC<JobCardProps> = ({
 
   const cancelRemove = () => {
     setShowConfirmModal(false);
+  };
+
+  const handleCancelApplication = () => {
+    if (onCancelApplication) {
+      onCancelApplication();
+    }
   };
 
   const saved = isJobSaved(job.id);
@@ -190,19 +193,31 @@ const JobCard: React.FC<JobCardProps> = ({
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              applied
-                ? { backgroundColor: colors.secondary }
-                : { backgroundColor: colors.primary },
-            ]}
-            onPress={handleApply}
-          >
-            <Text style={[styles.buttonText, { color: buttonTextColor }]}>
-              {applied ? "Applied" : "Apply"}
-            </Text>
-          </TouchableOpacity>
+          {showCancelApplicationButton && applied ? (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: colors.error }]}
+              onPress={handleCancelApplication}
+            >
+              <Text style={[styles.buttonText, { color: buttonTextColor }]}>
+                Cancel Application
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={[
+                styles.button,
+                applied
+                  ? { backgroundColor: colors.secondary }
+                  : { backgroundColor: colors.primary },
+              ]}
+              onPress={handleApply}
+              disabled={showCancelApplicationButton && applied}
+            >
+              <Text style={[styles.buttonText, { color: buttonTextColor }]}>
+                {applied ? "Applied" : "Apply"}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 

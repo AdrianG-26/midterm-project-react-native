@@ -13,6 +13,7 @@ interface JobContextProps {
   saveJob: (job: Job) => void;
   removeJob: (id: string) => void;
   applyForJob: (application: ApplicationForm) => void;
+  cancelApplication: (jobId: string) => void;
   isJobSaved: (id: string) => boolean;
   hasApplied: (id: string) => boolean;
   refreshJobs: () => void;
@@ -47,8 +48,8 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
       (job) =>
         (job.title ?? "").toLowerCase().includes(search) ||
         (job.companyName ?? "").toLowerCase().includes(search) ||
-        (job.locations["1"] ?? "").toLowerCase().includes(search) 
-        // || (job.description ?? "").toLowerCase().includes(search)
+        (job.locations["1"] ?? "").toLowerCase().includes(search)
+      // || (job.description ?? "").toLowerCase().includes(search)
     );
 
     setFilteredJobs(filtered);
@@ -93,6 +94,11 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
     setApplications([...applications, application]);
   };
 
+  const cancelApplication = (jobId: string) => {
+    // Remove application with the matching jobId
+    setApplications(applications.filter((app) => app.jobId !== jobId));
+  };
+
   const isJobSaved = (id: string) => {
     return savedJobs.some((job) => job.id === id);
   };
@@ -113,6 +119,7 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({
         saveJob,
         removeJob,
         applyForJob,
+        cancelApplication,
         isJobSaved,
         hasApplied,
         refreshJobs,
