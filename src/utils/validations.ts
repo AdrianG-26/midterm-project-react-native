@@ -19,18 +19,19 @@ export const validateForm = (form: ApplicationForm): FormErrors => {
   }
 
   // Contact number validation
-  const phoneRegex = /^[0-9]{11}$/;
+  const phoneRegex = /^09[0-9]{9}$/;
   if (!form.contactNumber.trim()) {
     errors.contactNumber = "Contact number is required";
   } else if (!phoneRegex.test(form.contactNumber)) {
-    errors.contactNumber = "Please enter a valid 11-digit phone number";
+    errors.contactNumber =
+      "Please enter a valid number starting with 09 (e.g., 09XXXXXXXXX)";
   }
 
   // Why hire you validation
   if (!form.whyHireYou.trim()) {
     errors.whyHireYou = "Please tell us why we should hire you";
-  } else if (form.whyHireYou.trim().length < 50) {
-    errors.whyHireYou = "Please provide at least 50 characters";
+  } else if (form.whyHireYou.trim().length < 10) {
+    errors.whyHireYou = "Please provide at least 10 characters";
   } else if (form.whyHireYou.trim().length > 500) {
     errors.whyHireYou = "Please keep your response under 500 characters";
   }

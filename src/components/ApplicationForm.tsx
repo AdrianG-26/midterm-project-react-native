@@ -32,32 +32,64 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   fromSavedJobs = false,
 }) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const { applyForJob } = useJobs();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const [form, setForm] = useState<ApplicationFormType>({
+  const initialFormState: ApplicationFormType = {
     name: "",
     email: "",
     contactNumber: "",
     whyHireYou: "",
     jobId: job.id,
-  });
+  };
+
+  const [form, setForm] = useState<ApplicationFormType>(initialFormState);
 
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateForm = (field: keyof ApplicationFormType, value: string) => {
+    // Special handling for contact number - ensure it starts with "09" and only contains digits
     if (field === "contactNumber") {
+      // Remove any non-digit characters
       const digitsOnly = value.replace(/\D/g, "");
-      const limitedDigits = digitsOnly.slice(0, 11);
+
+      // If the field is empty and the user is typing, automatically add "09"
+      let formattedValue = digitsOnly;
+      if (
+        form.contactNumber === "" &&
+        digitsOnly.length > 0 &&
+        !digitsOnly.startsWith("09")
+      ) {
+        formattedValue = "09" + digitsOnly;
+      }
+
+      // If the user deleted the "09" prefix, add it back
+      if (
+        form.contactNumber.startsWith("09") &&
+        digitsOnly.length >= 1 &&
+        !digitsOnly.startsWith("09")
+      ) {
+        formattedValue =
+          "09" + digitsOnly.substring(digitsOnly.startsWith("9") ? 1 : 0);
+      }
+
+      // Limit to 11 digits total
+      const limitedDigits = formattedValue.slice(0, 11);
       setForm({ ...form, [field]: limitedDigits });
     } else {
       setForm({ ...form, [field]: value });
     }
 
+    // Clear error when user starts typing
     if (errors[field as keyof FormErrors]) {
       setErrors({ ...errors, [field]: undefined });
     }
+  };
+
+  const resetForm = () => {
+    setForm(initialFormState);
+    setErrors({});
   };
 
   const handleSubmit = () => {
@@ -71,6 +103,9 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
     // Submit the application
     applyForJob(form);
 
+    // Reset the form immediately
+    resetForm();
+
     // Show success modal
     setModalVisible(true);
   };
@@ -78,19 +113,14 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   const closeModal = () => {
     setModalVisible(false);
 
-    // Clear the form
-    setForm({
-      name: "",
-      email: "",
-      contactNumber: "",
-      whyHireYou: "",
-      jobId: job.id,
-    });
-
-    // Navigate back to appropriate screen
-    if (fromSavedJobs) {
-      navigation.navigate("JobFinder");
-    }
+    // Use setTimeout to ensure the modal is fully closed before navigation
+    setTimeout(() => {
+      // Navigate back to the JobFinder main screen, resetting the navigation stack
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "JobFinder" }],
+      });
+    }, 300);
   };
 
   return (
@@ -187,7 +217,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
                     : colors.border,
                 },
               ]}
-              placeholder="Enter your 11-digit phone number"
+              placeholder="09XXXXXXXXX"
               placeholderTextColor={colors.secondary}
               value={form.contactNumber}
               onChangeText={(text) => updateForm("contactNumber", text)}
@@ -233,7 +263,14 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
             style={[styles.submitButton, { backgroundColor: colors.primary }]}
             onPress={handleSubmit}
           >
-            <Text style={styles.submitButtonText}>Submit Application</Text>
+            <Text
+              style={[
+                styles.submitButtonText,
+                { color: theme === "dark" ? "#2A2A2A" : "white" },
+              ]}
+            >
+              Submit Application
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -262,7 +299,14 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
                 ]}
                 onPress={closeModal}
               >
-                <Text style={styles.modalButtonText}>OK</Text>
+                <Text
+                  style={[
+                    styles.modalButtonText,
+                    { color: theme === "dark" ? "#2A2A2A" : "white" },
+                  ]}
+                >
+                  OK
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -332,7 +376,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   submitButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "600",
   },
@@ -371,7 +414,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "600",
   },

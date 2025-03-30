@@ -49,6 +49,8 @@ const JobCard: React.FC<JobCardProps> = ({
 
   // Get button text color based on theme
   const buttonTextColor = theme === "dark" ? "#2A2A2A" : "#F6F5F5";
+  // Define the not disclosed text style
+  const notDisclosedColor = "#E53935"; // Red color for "Not Disclosed"
 
   const handleApply = () => {
     // If showRemoveButton is true, we're likely on the SavedJobs screen
@@ -89,6 +91,22 @@ const JobCard: React.FC<JobCardProps> = ({
   const saved = isJobSaved(job.id);
   const applied = hasApplied(job.id);
 
+  // Helper function to display "Not Disclosed" for null/undefined values
+  const displayValue = (
+    value: any,
+    renderer?: (val: any) => React.ReactNode
+  ) => {
+    if (value === null || value === undefined || value === "") {
+      return (
+        <Text style={[styles.notDisclosedText, { color: notDisclosedColor }]}>
+          Not Disclosed
+        </Text>
+      );
+    }
+
+    return renderer ? renderer(value) : value;
+  };
+
   return (
     <>
       <View
@@ -98,13 +116,18 @@ const JobCard: React.FC<JobCardProps> = ({
         ]}
       >
         <View style={styles.header}>
-          <Image source={{ uri: job.companyLogo }} style={styles.logo} />
+          <Image
+            source={{
+              uri: job.companyLogo || "https://via.placeholder.com/50",
+            }}
+            style={styles.logo}
+          />
           <View style={styles.headerText}>
             <Text style={[styles.title, { color: colors.text }]}>
-              {job.title}
+              {displayValue(job.title)}
             </Text>
             <Text style={[styles.company, { color: colors.primary }]}>
-              {job.companyName}
+              {displayValue(job.companyName)}
             </Text>
           </View>
         </View>
@@ -118,13 +141,13 @@ const JobCard: React.FC<JobCardProps> = ({
                 color={colors.secondary}
               />
               <Text style={[styles.detailText, { color: colors.secondary }]}>
-                {job.jobType}
+                {displayValue(job.jobType)}
               </Text>
             </View>
             <View style={styles.detail}>
               <Icon name="home-outline" size={16} color={colors.secondary} />
               <Text style={[styles.detailText, { color: colors.secondary }]}>
-                {job.workModel}
+                {displayValue(job.workModel)}
               </Text>
             </View>
           </View>
@@ -137,28 +160,24 @@ const JobCard: React.FC<JobCardProps> = ({
                 color={colors.secondary}
               />
               <Text style={[styles.detailText, { color: colors.secondary }]}>
-                {job.seniorityLevel}
+                {displayValue(job.seniorityLevel)}
               </Text>
             </View>
             <View style={styles.detail}>
               <Icon name="cash-outline" size={16} color={colors.secondary} />
               <Text style={[styles.detailText, { color: colors.secondary }]}>
-                {job.minSalary} - {job.maxSalary}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.detailsRow}>
-            <View style={[styles.detail, styles.fullWidthDetail]}>
-              <Icon
-                name="location-outline"
-                size={16}
-                color={colors.secondary}
-              />
-              <Text style={[styles.detailText, { color: colors.secondary }]}>
-                {Array.isArray(job.locations)
-                  ? `${job.locations[0]}, ${job.locations[1]}`
-                  : job.locations}
+                {job.minSalary && job.maxSalary ? (
+                  `${job.minSalary} - ${job.maxSalary}`
+                ) : (
+                  <Text
+                    style={[
+                      styles.notDisclosedText,
+                      { color: notDisclosedColor },
+                    ]}
+                  >
+                    Not Disclosed
+                  </Text>
+                )}
               </Text>
             </View>
           </View>
@@ -409,6 +428,10 @@ const styles = StyleSheet.create({
   modalButtonText: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  notDisclosedText: {
+    fontStyle: "italic",
+    fontSize: 14,
   },
 });
 

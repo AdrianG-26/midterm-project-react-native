@@ -83,7 +83,7 @@ const CancelModal: React.FC<CancelModalProps> = ({
                   <Text
                     style={[styles.modalButtonText, { color: buttonTextColor }]}
                   >
-                    Cancel Application
+                    Cancel
                   </Text>
                 </TouchableOpacity>
               </View>
